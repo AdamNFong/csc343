@@ -4,7 +4,6 @@ CREATE VIEW GraderGroupCount AS
 CREATE VIEW moreThan10 AS 
 	SELECT assignment_id FROM GraderGroupCount a GROUP BY assignment_id HAVING (max(num_group) - min (num_group))>10;
 
-SELECT gGC.assignment_id, gGC.username, cGC.num_group as num_assigned FROM moreThan10 mt10 JOIN GraderGroupCount gGC ON gGC.assignment_id = mt10.assignment_id;
-
+INSERT INTO q5 (SELECT gGC.assignment_id, gGC.username, cGC.num_group as num_assigned FROM moreThan10 mt10 JOIN GraderGroupCount gGC ON gGC.assignment_id = mt10.assignment_id);
 
 	

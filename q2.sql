@@ -69,8 +69,8 @@ CREATE VIEW allaverage AS
 CREATE VIEW finalUsers AS 
 	SELECT dfl.username, aA.Overallaverage, dfl.Diff FROM diffFirstLast cfl JOIN allaverage aA ON cfl.username = aA.username;
 
-SELECT (MarkusUser.firstname+' '+ MarkusUser.surname) as ta_name, fu.aOverallaverage as average_mark_all_assignments, fu.Diff as mark_change_first_last
-FROM finalUsers fu JOIN MarkusUser ON MarkusUser.username = finalUsers.username;
+INSERT INTO q2(SELECT (MarkusUser.firstname+' '+ MarkusUser.surname) as ta_name, fu.aOverallaverage as average_mark_all_assignments, fu.Diff as mark_change_first_last
+FROM finalUsers fu JOIN MarkusUser ON MarkusUser.username = finalUsers.username);
 
 
 

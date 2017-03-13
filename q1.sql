@@ -32,6 +32,6 @@ CREATE VIEW 0to50 AS
 	SELECT aI.assignment_id, count(aI.grade) as num3 FROM (0to50NoNulls) nN RIGHT JOIN (allInfo) aI GROUP BY aI.assignment_id;  
 
 <!--final->
-	SELECT a.assignment as assignment_id, a.avgg as average_mark_percent, c1.num1 as num_80_100, c2.num2 as num_60_79, c3.num3 as num_50_59, c4.num4 as num_0_49 
+INSERT INTO q1(SELECT a.assignment as assignment_id, a.avgg as average_mark_percent, c1.num1 as num_80_100, c2.num2 as num_60_79, c3.num3 as num_50_59, c4.num4 as num_0_49 
 	FROM average a, 80to100 c1, 60to80 c2, 50to60 c3, 0to50 c4 
-	WHERE a.assignment_id = c1.assignment_id and c1.assignment_id = c2.assignment_id and c2.assignment_id = c3.assignment_id and c3.assignment_id = c4.assignment_id;  
+	WHERE a.assignment_id = c1.assignment_id and c1.assignment_id = c2.assignment_id and c2.assignment_id = c3.assignment_id and c3.assignment_id = c4.assignment_id);  

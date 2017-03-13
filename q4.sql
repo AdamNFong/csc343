@@ -19,7 +19,7 @@ CREATE VIEW notGraded AS
 CREATE VIEW combined AS
 	SELECT nG.assignment_id, nG.username, nG.graded, notG.noGrade FROM num-graded nG JOIN notGraded notG ON nG.username = notG.username and ng.assignment_id = notG.assignment_id;
 
-SELECT c.assignment_id as assignment_id, c.username as username, graded as num_marked, noGrade as num_not_marked, min(grade) as min_mark, max(grade) as max_mark
-       	FROM combined c LEFT JOIN grade ON c.group_id = grade.group_id GROUP BY c.assignment_id, c.username;
+INSERT INTO q4 (SELECT c.assignment_id as assignment_id, c.username as username, graded as num_marked, noGrade as num_not_marked, min(grade) as min_mark, max(grade) as max_mark
+       	FROM combined c LEFT JOIN grade ON c.group_id = grade.group_id GROUP BY c.assignment_id, c.username);
 
 

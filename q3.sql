@@ -55,5 +55,5 @@ CREATE VIEW withoutDescription AS
 	SELECT ss.assignment_id, ss.solocount as num_solo, ss.soloaverage as average_solo, ms.multicount as num_collaborators, ms.multiaverage as average_collaborators, ans.avgStuPerGroup as average_students_per_group
        FROM solos ss, multis ms, average_num_student ans WHERE ss.assignment_id = ms.assignment_id and ms.assignment_id = ans.assignment_id;
 
-SELECT wD.assignment_id, description, wD.num_solo, wD.average_solo, wD.num_collaborators, wD.average_collaborators, wD.average_students_per_group FROM withoutDescription wD JOIN Assignment 
-ON wD.assignment_id = Assignment.assignment_id;
+INSERT INTO q3 (SELECT wD.assignment_id, description, wD.num_solo, wD.average_solo, wD.num_collaborators, wD.average_collaborators, wD.average_students_per_group FROM withoutDescription wD JOIN Assignment 
+ON wD.assignment_id = Assignment.assignment_id);
