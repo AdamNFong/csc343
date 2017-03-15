@@ -18,7 +18,7 @@ CREATE VIEW criteria1 AS
 <!--Criteria 2->
 
 CREATE VIEW criteria2Int AS
-	SELECT Grader.username FROM Grader JOIN AssignmentGroup ON Grader.group_id = AssignmentGroup.group_id 
+	SELECT Grader.username FROM Grader JOIN AssiIgnmentGroup ON Grader.group_id = AssignmentGroup.group_id 
 	GROUP BY Grader.username, AssignmentGroup.assignment_id 
 	HAVING count(assignmentGroup.group_id) < 10;
 
@@ -27,12 +27,26 @@ CREATE VIEW criteria2 AS
 
 <!--Criteria 3->
 
-CREATE VIEW AGRade AS
-	SELECT Grader.username, assignemntGroup.assignment_id, grade FROM Membership JOIN AssignmentGroup JOIN Grade JOIN Grader 
-	ON Membership.group_id = AssignmentGroup.group_id and AssignmentGroup.group_id = Grade.group_id and Grade.Group_id = Grader.group_id;
+<!--START NEW QUERIES -->
+
+CREATE VIEW outOf AS
+	SELECT assignment_id, weight * out_of as partialTotal FROM RubricItem;
+
+CREATE VIEW totalOutOf AS
+	SELECT assignment_id, sum (partialTotal) as total FROM outOf oo GROUP BY assignment_id;
+
+CREATE VIEW percent2group AS
+	SELECT AssignmentGroup.assignment_id,AssignmentGroup.group_id, mark/total as percent FROM totalOutOf too JOIN AssignmentGroup JOIN Result 
+	ON too.assignment_id = AssignmentGroup.assignment_id and AssignmentGroup.group_id = Result.group_id; 
+
+<!--END NEW QUERIES-->
+
+CREATE VIEW AGrade AS
+	SELECT Grader.username, AssignmentGroup.assignment_id, p2g.percent FROM Membership JOIN AssignmentGroup JOIN percent2group p2g JOIN Grader 
+	ON Membership.group_id = AssignmentGroup.group_id and AssignmentGroup.group_id = p2g.group_id and p2g.group_id = Grader.group_id;
 
 CREATE VIEW averages AS
-	SELECT AG.Username, AG.assignment_id, avg(AG.grade) as average FROM AGrade AG GROUP BY AG.username, AG.assignment_id;
+	SELECT AG.Username, AG.assignment_id, avg(AG.percent) as average FROM AGrade AG GROUP BY AG.username, AG.assignment_id;
 
 CREATE VIEW dueDates AS
 	SELECT av.username, av.assignment_id, av.average, Assignment.duedate FROM averages av JOIN Assignment ON av.assignment_id = Assignments.assignment_id;
@@ -70,7 +84,7 @@ CREATE VIEW finalUsers AS
 	SELECT dfl.username, aA.Overallaverage, dfl.Diff FROM diffFirstLast cfl JOIN allaverage aA ON cfl.username = aA.username;
 
 INSERT INTO q2(SELECT (MarkusUser.firstname+' '+ MarkusUser.surname) as ta_name, fu.aOverallaverage as average_mark_all_assignments, fu.Diff as mark_change_first_last
-FROM finalUsers fu JOIN MarkusUser ON MarkusUser.username = finalUsers.username);
+FROM finalUsers fu JOIN MarkusUser ON MarkusUser.username = finalUsers.username WHERE MarkusUser.type ='TA');
 
 
 
