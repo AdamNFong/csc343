@@ -9,15 +9,27 @@ CREATE VIEW solonulls AS
 	SELECT * FROM allassign aA LEFT JOIN Alone al ON aA.assignment_id = al.assignment_id;
 
 CREATE VIEW numsoloq AS
-	SELECT assignment_id, count(group_id) as solocount FROM solonulls sn GROUP BY assignment_id;
+	SELECT sn.assignment_id, count(group_id) as solocount FROM solonulls sn GROUP BY assignment_id;
+
+--percents
+
+CREATE VIEW outOF AS
+	SELECT assignment_id, weight * out_of as partialTotal FROM RubricItem;
+
+CREATE VIEW totalOutOf AS
+	SELECT assignment_id, sum (partialTotal) as total FROM outOF oo GROUP BY assignment_id;
+
+CREATE VIEW percent2group AS
+	SELECT assignment_id, group_id, mark / total as percent FROM AssignmentGroup JOIN Result JOIN totalOutOf too 
+	ON too.assignment_id = AssignmentGroup.assignment_id and Result.group_id = AssignmentGroup.group_id;
 
 CREATE VIEW grades AS
-	SELECT sn.assignment_id, sn.group_id, Grade.grade FROM solonulls sn LEFT JOIN Grade ON sn.group_id = Grade.group_id;
+	SELECT sn.assignment_id, sn.group_id, p2g.percent FROM solonulls sn LEFT JOIN percent2group p2g ON sn.group_id = p2g.group_id;
 
 CREATE VIEW averageq AS 
-	SELECT assignment_id, avg(grade) as soloaverage FROM Grade GROUP BY assignment_id;
+	SELECT assignment_id, avg(p2g.percent) as soloaverage FROM percent2group p2g GROUP BY assignment_id;
 
-<!-- multi->
+-- multi CHANGE
 CREATE VIEW multi AS
 	SELECT assignment_id, AssignmentGroup.group_id, username FROM AssignmentGroup JOIN Membership ON Membership.group_id = AssignmentGroup.group_id 
 	GROUP BY assignment_id, AssignmentGroup.group_id HAVING count(username)>1;
@@ -32,10 +44,10 @@ CREATE VIEW DistinctGroups AS
 	SELECT DISTINCT multin.assignment_id, multin.group_id FROM multinulls multin;
 
 CREATE VIEW multigrades AS
-	SELECT assignment_id, group_id, grade FROM DistinctGroup dg LEFT JOIN Grade ON dg.group_id = Grade.group_id;
+	SELECT dg.assignment_id, group_id, p2g.percent FROM DistinctGroup dg LEFT JOIN percent2group p2g ON dg.group_id = p2g.group_id;
 
 CREATE VIEW averageMulti AS
-	SELECT mg.assignment_id, avg(mg.grade) as multiaverage FROM multigrades mg GROUP BY mg.assignment_id;
+	SELECT mg.assignment_id, avg(mg.percent) as multiaverage FROM multigrades mg GROUP BY mg.assignment_id;
 
 CREATE VIEW solos AS
 	SELECT * FROM averageq aq JOIN numsoloq ns ON aq.assignment_id = ns.assignment_id;
@@ -43,7 +55,7 @@ CREATE VIEW solos AS
 CREATE VIEW multis AS
 	SELECT * FROM averageMulti amu JOIN num_multiq nmu ON amu.assignment_id = nmu.assignment_id;
 
-<!--last row->
+--last row
 
 CREATE VIEW num_students AS
 	SELECT assignment_id, count(username) as memCount FROM AssignmentGroup JOIN Membership ON Membership.group_id = AssignmentGroup.group_id GROUP BY assignment_id; 
