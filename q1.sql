@@ -45,9 +45,6 @@ CREATE VIEW to100NoNulls AS
 CREATE VIEW to100 AS
 	SELECT aa.assignment_id, count(nN.perc) as num1 FROM to100NoNulls nN RIGHT JOIN allassign aa ON aa.assignment_id = nN.assignment_id GROUP BY aa.assignment_id;  
 
-
-	
-
 CREATE VIEW to80NoNulls AS
 	SELECT assignment_id,perc FROM percents p2 WHERE p2.perc>=60 and p2.perc <80;
 
