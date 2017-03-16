@@ -37,13 +37,13 @@ public class Assignment2 {
         // Replace this return statement with an implementation of this method!
     String search_path = "SET SEARCH_PATH TO 'markus'";
     try {
-	connection = DriverManager.getConnection(URL,username,password);
-	search = connection.preparedStatement(SearchPath); 
-	search.executeQuery();
-	return true;
+        connection = DriverManager.getConnection(URL,username,password);
+        search = connection.preparedStatement(SearchPath); 
+	      search.executeQuery();
+	      return true;
     }catch (Exception e){
-	return false;
-	}
+	      return false;
+	    }
 	
     }
 
@@ -72,7 +72,35 @@ public class Assignment2 {
      */
     public boolean assignGrader(int groupID, String grader) {
         // Replace this return statement with an implementation of this method!
-        return false;
+        ResultSet rs;
+
+        //checks if grader is not a student
+        String username2job = "select type from MarkusUser where Grader.username = " + grader + ";";
+        PreparedStatement prep = connection.preparedStatement(username2job);
+        rs = prep.executeQuery();
+        rs.next()
+        String type = rs.getString("type");
+        if (type.equals('student'))   
+          return false;
+        
+        //find the group if it exists
+        String existanceOfGroup = "select * from AssignmentGroup where group_id = " + group_id + ";";
+        prep = connection.preparedStatement(existanceOfGroup);
+        rs = prep.executeQuery();
+        if (!rs.next())
+          return false;
+        
+        //Finds Grader already assigned to group if any
+        String alreadyAssigned = "select * from Grader where group_id = " + group_id +";"; 
+        prep = connection.preparedStatement(alreadyAssigned);
+        rs = prep.executeQuery();
+        if (rs.next())
+          return false;
+          
+        String update = "update Grader set group_id = " + group_id + " where username = " + grader + ";";
+        prep = connection.preparedStatement(update);
+        prep.executeQuery();
+        return true;
     }
 
     /**
