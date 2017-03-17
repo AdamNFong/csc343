@@ -176,11 +176,15 @@ public class Assignment2 {
         //extreme case
         String q1 = "select username from MarkusUser where type = 'student';";
         PreparedStatement ps = connection.preparedStatement (q1);
+        rs = ps.executeQuery();
         if (!rs.next())
           return true;
           
-        String q1 = ""
-        
+        String q2 = "select group_max from Assignment where assignment = " + assignmentToGroup + ";";
+        ps = connection.preparedStatement (q2);
+        rs = ps.executeQuery();
+        rs.next();
+        int max = rs.getInt("group_max");
         
         return false;
     }
