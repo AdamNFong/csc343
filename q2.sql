@@ -41,7 +41,7 @@ CREATE VIEW criteria2Int AS
 	SELECT Grader.username FROM Grader, AssignmentGroup, Assignment 
   where Grader.group_id = AssignmentGroup.group_id and AssignmentGroup.assignment_id = Assignment.assignment_id
 	GROUP BY Grader.username, AssignmentGroup.assignment_id 
-	HAVING count(assignmentGroup.group_id) < 5;
+	HAVING count(assignmentGroup.group_id) < 10;
 
 CREATE VIEW criteria2 AS
 	Select * From criteria1 c 

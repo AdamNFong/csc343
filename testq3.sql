@@ -8,27 +8,17 @@ insert into AssignmentGroup values
 (2, 1, 'sdasd'),
 (3, 1, 'sdasd'),
 (4, 1, 'sdasd'),
-(5, 1, 'asdasda'),
+(5, 1, 'sda'),
 (6, 1, 'sdasd'),
 (7, 1, 'sdasd'),
 (8, 1, 'sdasd'),
-(9, 1, 'sdasd'),
-(10, 1, 'asdasd'),
 
 (11, 2, 'sda'),
 (12, 2, 'sdasd'),
 (13, 2, 'sdasd'),
-(14, 2, 'sdasd'),
-(15, 2, 'asdasda'),
-(16, 2, 'sdasd'),
-(17, 2, 'sdasd'),
-(18, 2, 'sdasd'),
-(19, 2, 'sdasd'),
-(20, 2, 'asdasd');
+(14, 2, 'sdasd');
 
 insert into MarkusUser values
-('fongadam', 'fong', 'adam', 'TA'),
-('shethparth', 'sheth', 'parth', 'TA'),
 ('s1', 's1', 's1', 'TA'),
 ('s2', 's2', 's2', 'TA'),
 ('s3', 's3', 's3', 'TA'),
@@ -52,29 +42,6 @@ insert into MarkusUser values
 ('s20', 's20', 's20', 'TA'),
 ('s21', 's21', 's21', 'TA');
 
-insert into grader values 
-(1 , 'fongadam'),
-(2 , 'fongadam'),
-(3 , 'fongadam'),
-(4 , 'fongadam'),
-(5 , 'fongadam'),
-(11 , 'fongadam'),
-(12 , 'fongadam'),
-(13 , 'fongadam'),
-(14 , 'fongadam'),
-(15 , 'fongadam'),
-
-(6,'shethparth'),
-(7,'shethparth'),
-(8,'shethparth'),
-(9,'shethparth'),
-(10,'shethparth'),
-
-(16,'shethparth'),
-(17,'shethparth'),
-(18,'shethparth'),
-(19,'shethparth'),
-(20,'shethparth');
 
 insert into RubricItem values 
 (1, 1, 'style', 10, 0.4),
@@ -88,44 +55,27 @@ insert into Membership values
 ('s3',2),
 ('s4',3),
 ('s5',4),
-('s6',5),
-('s7',6),
-('s8',7),
-('s9',8),
-('s14',9),
-('s15',10),
-
+('s6',2),
+('s7',5),
+('s8',6),
 
 ('s10',11),
 ('s11',12),
 ('s12',13),
 ('s13',14),
-('s16',15),
-('s17',16),
-('s18',17),
-('s19',18),
-('s20',19),
-('s21',20);
+('s14',14);
 
 insert into Result values
 (1, 1, true),
 (2, 2, true),
 (3, 3, true),
 (4, 4, true),
-(5, 5, true),
-(6, 3, true),
-(7, 4, true),
-(8, 8, true),
-(9, 5, true),
-(10, 1, true),
+(5, 1, true),
+(6, 2, true),
+(7, 3, true),
+(8, 4, true),
 
 (11, 1, true),
 (12, 3, true),
 (13, 10, true),
-(14, 7, true),
-(15, 9, true),
-(16, 9, true),
-(17, 9, true),
-(18, 9, true),
-(19, 9, true),
-(20, 9, true);
+(14, 7, true);
