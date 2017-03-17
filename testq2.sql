@@ -113,7 +113,7 @@ insert into Membership values
 
 insert into Result values
 (1, 1, true),
---(2, 2, true),
+(2, 2, true),
 (3, 3, true),
 (4, 4, true),
 (5, 5, true),
