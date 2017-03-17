@@ -171,7 +171,17 @@ public class Assignment2 {
      */
     public boolean createGroups(int assignmentToGroup, int otherAssignment,
             String repoPrefix) {
-        // Replace this return statement with an implementation of this method!
+        
+        ResultSet rs;
+        //extreme case
+        String q1 = "select username from MarkusUser where type = 'student';";
+        PreparedStatement ps = connection.preparedStatement (q1);
+        if (!rs.next())
+          return true;
+          
+        String q1 = ""
+        
+        
         return false;
     }
 

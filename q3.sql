@@ -90,7 +90,7 @@ CREATE VIEW num_students AS
 	SELECT assignment_id, count(username) as memCount FROM AssignmentGroup JOIN Membership ON Membership.group_id = AssignmentGroup.group_id GROUP BY assignment_id; 
 
 CREATE VIEW average_num_students AS
-	SELECT ns.assignment_id, memCount / groupCount as avgStuPerGroup FROM num_students ns, num_groups_per_assignment ngpa 
+	SELECT ns.assignment_id, (memCount*1.0)/(groupCount*1.0) as avgStuPerGroup FROM num_students ns, num_groups_per_assignment ngpa 
   WHERE ngpa.assignment_id = ns.assignment_id;
 
 CREATE VIEW withoutDescription AS
