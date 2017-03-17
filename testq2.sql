@@ -1,6 +1,7 @@
 insert into Assignment values 
 (1, 'n/a1', '2015-12-12 12:12:12', 1, 5),
-(2, 'n/a2', '2016-12-12 12:12:12', 1, 5);
+(2, 'n/a2', '2016-12-12 12:12:12', 1, 5),
+(3, 'n/a2', '2017-12-12 12:12:12', 1, 5);
 
 
 insert into AssignmentGroup values
@@ -20,11 +21,12 @@ insert into AssignmentGroup values
 (13, 2, 'sdasd'),
 (14, 2, 'sdasd'),
 (15, 2, 'asdasda'),
-(16, 2, 'sdasd'),
-(17, 2, 'sdasd'),
-(18, 2, 'sdasd'),
-(19, 2, 'sdasd'),
-(20, 2, 'asdasd');
+
+(16, 3, 'sdasd'),
+(17, 3, 'sdasd'),
+(18, 3, 'sdasd'),
+(19, 3, 'sdasd'),
+(20, 3, 'asdasd');
 
 insert into MarkusUser values
 ('fongadam', 'fong', 'adam', 'TA'),
@@ -70,17 +72,19 @@ insert into grader values
 (9,'shethparth'),
 (10,'shethparth'),
 
-(16,'shethparth'),
-(17,'shethparth'),
-(18,'shethparth'),
-(19,'shethparth'),
-(20,'shethparth');
+(16,'fongadam'),
+(17,'fongadam'),
+(18,'fongadam'),
+(19,'fongadam'),
+(20,'fongadam');
 
 insert into RubricItem values 
 (1, 1, 'style', 10, 0.4),
 (2, 1, 'correctness', 10, 0.6),
 (3, 2, 'style', 10, 0.4),
-(4, 2, 'correctness', 10, 0.6);
+(4, 2, 'correctness', 10, 0.6),
+(5, 3, 'style', 10, 0.4),
+(6, 3, 'correctness', 10, 0.6);
 
 insert into Membership values 
 ('s1',1),
@@ -109,7 +113,7 @@ insert into Membership values
 
 insert into Result values
 (1, 1, true),
-(2, 2, true),
+--(2, 2, true),
 (3, 3, true),
 (4, 4, true),
 (5, 5, true),

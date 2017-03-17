@@ -32,7 +32,7 @@ insert into RubricItem values
 
 insert into Result values
 (1, 9, true),
-(2, 3, true),
+(2, 9, true),
 (3, 6, true),
 (4, 7, true),
 (5, 10, true);
