@@ -174,17 +174,39 @@ public class Assignment2 {
         
         ResultSet rs;
         //extreme case
-        String q1 = "select username from MarkusUser where type = 'student';";
-        PreparedStatement ps = connection.preparedStatement (q1);
+        String q = "select username from MarkusUser where type = 'student';";
+        PreparedStatement ps = connection.preparedStatement (q);
         rs = ps.executeQuery();
         if (!rs.next())
           return true;
           
-        String q2 = "select group_max from Assignment where assignment = " + assignmentToGroup + ";";
-        ps = connection.preparedStatement (q2);
+        //Finding maximum group_size
+        q = "select group_max from Assignment where assignment = " + assignmentToGroup + ";";
+        ps = connection.preparedStatement (q);
         rs = ps.executeQuery();
         rs.next();
         int max = rs.getInt("group_max");
+        
+        //finding every user in AssignmentToGroup and their total mark
+        String mark_user = "select mark, username from Membership, Assignment, Result where Membership.group_id = Assignment.group_id"
+        		+ " and Assignment.group_id = Result.group_id and Assignment = " + otherAssignment + " "
+        				+ " ORDER BY mark DESC;";
+        ps = connection.prepareStatement(mark_user);
+        rs = ps.executeQuery();
+        
+//        q = "select setVal('AssignmentGroup_group_id_seq',0)";
+//        ps = connection.prepareStatement(q);
+//        ps.executeQuery();
+        
+        int current_group_count = 0;
+        String add_user = null;
+        while (rs.next()){
+        	if (current_group_count < max){
+        		add_user = "Insert into AssignmentGroup value (" + assignmentToGroup +" ,)";
+        	}
+        	
+        }
+        
         
         return false;
     }
