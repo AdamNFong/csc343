@@ -26,7 +26,8 @@ insert into AssignmentGroup values
 (18, 2, 'sdasd'),
 (19, 2, 'sdasd'),
 (20, 2, 'asdasd'),
-(21, 3, 'asdasd');
+(21, 2, 'asdasd'),
+(22, 2, 'asdasd');
 
 insert into MarkusUser values
 ('fongadam', 'fong', 'adam', 'TA'),
@@ -62,25 +63,19 @@ insert into grader values
 (3 , 'fongadam'),
 (4 , 'fongadam'),
 (5 , 'fongadam'),
-(11 , 'fongadam'),
-(12 , 'fongadam'),
-(13 , 'fongadam'),
-(14 , 'fongadam'),
-(15 , 'fongadam'),
+
+--(11 , 'fongadam'),
 
 (6,'shethparth'),
-(7,'shethparth'),
-(8,'shethparth'),
-(9,'shethparth'),
-(10,'shethparth'),
 
 (16,'shethparth'),
 (17,'shethparth'),
 (18,'shethparth'),
 (19,'shethparth'),
+(20,'shethparth');
 
-(20, 'yeestephen'),
-(21, 'yeestephen');
+--(21, 'yeestephen'),
+--(22, 'yeestephen');
 
 
 insert into RubricItem values 
