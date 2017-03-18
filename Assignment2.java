@@ -54,37 +54,13 @@ public class Assignment2 {
      * @return true if the closing was successful, false otherwise
      */
     public boolean disconnectDB() {
-    try{
-        try{
-            Statement statement = connection.createStatement();
-
-        try {
-            ResultSet resultSet = statement.executeQuery("useless value");
-
-        try{
-            int a = 5;
-        }
-        finally {
-
-            resultSet.close();
-        }
-        }
-        finally{
-            statement.close();
-        }
-        }
-        finally{
-            connection.close();
-        }
-        
-        if (connection == null){
-            return true;
-        }
-        return false;
-        }catch (SQLException e){
+    try { 
+        connection.close();
+        return true; 
+      }catch (SQLException e){
         e.printStackTrace();
         return false;
-        }
+      }
     }
 
     /**
@@ -190,26 +166,32 @@ public class Assignment2 {
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
     	ResultSet rs;
     	try{
+     boolean check = false;
     	//assignment does not exist check
-    	String assignmentcheck = "Select * from Assignment where assignment_id = '"+ assignmentID + "';";
+    	String assignmentcheck = "Select * from Assignment;";
     	PreparedStatement ps = connection.prepareStatement(assignmentcheck);
     	rs = ps.executeQuery();
-    	if (!rs.next())
-    		return false; 
+    	while (rs.next()){
+       if (rs.getInt ("assignment_id") == assignmentID)
+    		check = true;
+        }
+         if (!check)
+            return false;
     	
+     check = false;
     	//no group declared check
     	String noGroupDec = "Select * from AssignmentGroup where assignment_id = '"+ assignmentID + "' and group_id = '" + groupID +"';"; 
     	ps = connection.prepareStatement(noGroupDec);
     	rs = ps.executeQuery();
-    	if (!rs.next())
+    	if (rs.next())
     		return false;
     	
         // max capacity groups
-    	String at_capacity = "create view capacity as select assignment_id,group_max from Assignment;"
-    			+ "create view memcount as select assignment_id , Membership.group_id, count (username) as membercount from assignmentGroup, Membership where AssignmentGroup.group_id = Membership.group_id;"
-    			+ "select mc.group_id from memcount mc JOIN capacity c ON mc.assignment_id = c.assignment_id where mc.membercount = c. group_max;";
-   	  ps = connection.prepareStatement(at_capacity);
-    	rs = ps.executeQuery();
+    	String at_capacityviews = "create view capacity as select assignment_id,group_max from Assignment;"
+    			+ "create view memcount as select assignment_id , Membership.group_id, count (username) as membercount from assignmentGroup, Membership where AssignmentGroup.group_id = Membership.group_id Group by assignment_id , Membership.group_id;";
+  			String qat_capacity = "select mc.group_id from memcount mc JOIN capacity c ON mc.assignment_id = c.assignment_id where mc.membercount = c. group_max;";
+   	  ps = connection.prepareStatement(at_capacityviews);
+    	rs = ps.execute();
     	
     	while (rs.next()){
     		if (rs.getInt("group_id") == groupID)
@@ -238,7 +220,7 @@ public class Assignment2 {
     	//all checks passed now to record
     	String Record ="insert into Memebership values ('"+newMember+"', " + groupID + ")";
     	ps = connection.prepareStatement(Record);
-    	ps.executeQuery();
+    	ps.execute();
     	return true;
     	
     	}catch (SQLException e){
@@ -455,9 +437,5 @@ public class Assignment2 {
            a2.disconnectDB();
        } catch (SQLException e) {
            e.printStackTrace();
-       }
- } catch (SQLException e) {
-            e.printStackTrace();
- }
-    }
-}
+       }    
+}}
