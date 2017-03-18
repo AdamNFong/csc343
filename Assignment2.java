@@ -53,6 +53,32 @@ public class Assignment2 {
      * @return true if the closing was successful, false otherwise
      */
     public boolean disconnectDB() {
+        try{
+            Statement statement = connection.createStatement();
+
+        try {
+            ResultSet resultSet = statement.executeQuery("useless value");
+
+        try{
+            int a = 5;
+        }
+        finally {
+            resultSet.close();
+        }
+        }
+        finally{
+            statement.close();
+        }
+        }
+        finally{
+            connection.close();
+        }
+        
+        if (connection == NULL){
+            return true;
+        }
+        return false;
+        
         // Replace this return statement with an implementation of this method!
         return false;
     }
@@ -75,6 +101,7 @@ public class Assignment2 {
         ResultSet rs;
 
         //checks if grader is not a student
+        try{
         String username2job = "select type from MarkusUser where Grader.username = " + grader + ";";
         PreparedStatement prep = connection.preparedStatement(username2job);
         rs = prep.executeQuery();
@@ -97,10 +124,23 @@ public class Assignment2 {
         if (rs.next())
           return false;
           
-        String update = "update Grader set group_id = " + group_id + " where username = " + grader + ";";
-        prep = connection.preparedStatement(update);
-        prep.executeQuery();
+        String temp = "select * from Grader where username = '" + grader +"';";
+        prep = connection.preparedStatement(alreadyAssigned);
+        rs = prep.executeQuery();
+        String modify = null;
+        if (rs.next())      
+        	modify = "update Grader set group_id = " + group_id + " where username = " + grader + ";";
+        else 
+        	modify = "insert into grader values (" +groupID + ", " + grader+")";
+        
+        prep = connection.preparedStatement(modify);
+        prep.execute();
+        
         return true;
+        }catch(Exception e){
+        	System.out.println("Error in DB");
+        	return false;
+        }
     }
 
     /**
@@ -124,8 +164,63 @@ public class Assignment2 {
      * @return true if the operation was successful, false otherwise
      */
     public boolean recordMember(int assignmentID, int groupID, String newMember) {
-        // Replace this return statement with an implementation of this method!
-        return false;
+    	
+    	try{
+    	//assignment does not exist check
+    	String assignmentcheck = "Select * from Assignment where assignment_id = '"+ assignmentID + "';";
+    	ps = connection.prepareStatement(assignmentcheck);
+    	rs = ps.executeQuery();
+    	if (!rs.next())
+    		return false; 
+    	
+    	//no group declared check
+    	String noGroupDec = "Select * from AssignmentGroup where assignment_id = '"+ assignmentID + "' and group_id = '" + groupID "';"; 
+    	ps = connection.prepareStatement(noGroupDec);
+    	rs = ps.executeQuery();
+    	if (!rs.next())
+    		return false;
+    	
+        // max capacity groups
+    	String at_capacity = "create view capacity as select assignment_id,group_max from Assignment;"
+    			+ "create view memcount as select assignment_id , Membership.group_id, count (username) as membercount from assignmentGroup, Membership where AssignmentGroup.group_id = Membership.group_id;"
+    			+ "select mc.group_id from memcount mc JOIN capacity c ON mc.assignment_id = c.assignment_id where mc.membercount = c. group_max;";
+    	PreparedStatement ps = connection.prepareStatement(at_capacity);
+    	rs = ps.executeQuery();
+    	
+    	while (rs.next()){
+    		if (rs.getInt('group_id') == groupID)
+    			return false;
+    	}
+    	
+    	//invalid name check
+    	if (newMember.length() > 25)
+    		return false;
+    	
+    	//student check
+    	String student = "Select * from MarkusUsers where username = '" + newMember +"';";
+    	ps = connection.prepareStatement(student);
+    	rs = ps.executeQuery();
+    	if (!rs.getString('type').equals('student'))
+    		return false;
+    	
+    	//student already in groupID
+    	String already = "Select username, group_id from Membership, AssignmentGroup where username = '" + newMember +"' and group_id = '"+ groupID +"';";
+    	ps = connection.prepareStatement(already);
+    	rs = ps.executeQuery();
+    	if (!rs.next())
+    		return true;
+    	
+    	
+    	//all checks passed now to record
+    	String Record ="insert into Memebership values ('"+newMember+"', " + groupID + ")";
+    	ps = connection.prepareStatement(Record);
+    	ps.executeQuery();
+    	return true;
+    	
+    	}catch (Exception e){
+    		System.out.println("Error in DB");
+        	return false;
+    	}
     }
 
     /**
@@ -171,8 +266,8 @@ public class Assignment2 {
      */
     public boolean createGroups(int assignmentToGroup, int otherAssignment,
             String repoPrefix) {
-        
-        ResultSet rs;
+        try {
+        ResultSet rs, rs2, rs3, temp;
         //extreme case
         String q = "select username from MarkusUser where type = 'student';";
         PreparedStatement ps = connection.preparedStatement (q);
@@ -188,27 +283,109 @@ public class Assignment2 {
         int max = rs.getInt("group_max");
         
         //finding every user in AssignmentToGroup and their total mark
-        String mark_user = "select mark, username from Membership, Assignment, Result where Membership.group_id = Assignment.group_id"
+        String mark_user = " select mark, username from Membership, Assignment, Result where Membership.group_id = Assignment.group_id"
         		+ " and Assignment.group_id = Result.group_id and Assignment = " + otherAssignment + " "
         				+ " ORDER BY mark DESC;";
+        
+        String mark_user2= " create view mark_user as select username from Membership, Assignment, Result where Membership.group_id = Assignment.group_id"
+        		+ " and Assignment.group_id = Result.group_id and Assignment = " + otherAssignment + ";";
+        
+        String users = "create view users as Select username from Membership;";
+        String nulls = "select * from (select * from users EXCEPT select * mark_users2) a ORDER BY a.username;";
+        
         ps = connection.prepareStatement(mark_user);
         rs = ps.executeQuery();
         
-//        q = "select setVal('AssignmentGroup_group_id_seq',0)";
-//        ps = connection.prepareStatement(q);
-//        ps.executeQuery();
+        ps = connection.prepareStatement(users);
+        ps.execute();
+        ps = connection.prepareStatement(nulls);
+        rs3 = ps.executeQuery();
         
+        //Finding the maximum group_id from which we can start new groups without conflicting IDs
+        int max_group_id = 0;
+        String max_group = "Select max(group_id) as max_groupID from AssignmentGroup;";
+        ps = connection.prepareStatement(max_group);
+        rs2 = ps.executeQuery();
+        rs2.next();
+        
+        max_group_id = rs2.getInt('max_groupID');
+        
+        
+        q = "select setVal('AssignmentGroup_group_id_seq', "+ max_group_id +")";
+        ps = connection.prepareStatement(q);
+        ps.execute();
+       
+        
+        int counter = max_group_id + 1;
         int current_group_count = 0;
         String add_user = null;
-        while (rs.next()){
-        	if (current_group_count < max){
-        		add_user = "Insert into AssignmentGroup value (" + assignmentToGroup +" ,)";
+        String delete_user = null;
+        String add_group = null;
+        String username = null;
+        String temps = null;
+        String tempname = null;
+        double mark = 0;
+        boolean next = rs.next();
+        boolean tempnext = false;
+        
+        while (next){
+        	username = rs.getString('username');
+        	mark = rs.getDouble('mark');
+      
+        	//insert a new group with new assignment
+        	if (current_group_count == 0){
+        		
+        		add_group = "Insert into AssignmentGroup values (" + assignmentToGroup +" , '" + repoPrefix + "/group_+" + counter + "')";
+    			ps = connection.prepareStatement(add_group);
+    			ps.executeQuery();
         	}
         	
+        	if (!tempnext){
+        			temps = "Select mark, username from "
+        					+ " (select mark, username from Membership, Assignment, Result where Membership.group_id = Assignment.group_id"
+        						+ " and Assignment.group_id = Result.group_id and Assignment = " + otherAssignment + " "
+        							+ " ORDER BY mark DESC) Where mark = " + mark + " ORDER BY username ASC;";
+        		
+    		ps = connection.prepareStatement(temps);
+    		temp = ps.executeQuery(); 
+        	}
+        	tempnext = temp.next();
+        	while (current_group_count != max && tempnext){
+        	    tempname = temp.getString('username');
+        		if (current_group_count < max){
+        			delete_user = "delete from Membership where username = '"+ tempname +"';";    
+        			ps = connection.prepareStatement(delete_user);
+        			ps.execute();
+        			
+        			add_user = "insert into Membership values ('" + tempname +"', " + counter +");";
+        			ps = connection.prepareStatement(add_user);
+        			ps.execute();
+        			next = rs.next();
+        		}	
+        		tempnext = temp.next();
+        		current_group_count ++;
+        		
+        	}
+        	
+    		if (current_group_count == max){
+    			current_group_count = 0;
+    			counter ++;
+    		}
+    		
         }
         
         
-        return false;
+        //add nulls
+        
+        
+        
+        
+        return true;
+        
+        }catch (Exception e){
+        	System.out.println ("error in db");
+        	return false;
+        }
     }
 
     public static void main(String[] args) {
