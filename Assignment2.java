@@ -138,7 +138,7 @@ public class Assignment2 {
         try{
         rs.close();
         return true;
-        }(SQLException e){
+        }catch(SQLException e){
         	e.printStackTrace();
          return false;
         }
