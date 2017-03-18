@@ -39,9 +39,10 @@ public class Assignment2 {
     try {
         connection = DriverManager.getConnection(URL,username,password);
         search = connection.preparedStatement(SearchPath); 
-	      search.executeQuery();
+	      search.execute();
 	      return true;
-    }catch (Exception e){
+    }catch (SQLException e){
+    	System.out.println ("problem connecting");
 	      return false;
 	    }
 	
@@ -137,7 +138,7 @@ public class Assignment2 {
         prep.execute();
         
         return true;
-        }catch(Exception e){
+        }catch(SQLException e){
         	System.out.println("Error in DB");
         	return false;
         }
@@ -217,7 +218,7 @@ public class Assignment2 {
     	ps.executeQuery();
     	return true;
     	
-    	}catch (Exception e){
+    	}catch (SQLException e){
     		System.out.println("Error in DB");
         	return false;
     	}
@@ -382,14 +383,42 @@ public class Assignment2 {
         
         return true;
         
-        }catch (Exception e){
+        }catch (SQLException e){
         	System.out.println ("error in db");
         	return false;
         }
     }
 
     public static void main(String[] args) {
-        // You can put testing code in here. It will not affect our autotester.
-        System.out.println("Boo!");
+    	try {
+            Assignment2 a2 = new Assignment2();
+
+ //make sure to change the url and username
+            boolean keks=a2.connectDB(
+                    "jdbc:postgresql://localhost:5432/csc343h-fongadam",
+                    "fongadam",
+                    ""
+            );
+            System.out.println(keks);
+
+            //=============================assignGrader=============================================
+            boolean result;
+ //DNE username
+ result = a2.assignGrader(2000,"kek");
+ //student username
+ result = a2.assignGrader(2000,"s1");
+ //groupID does not exist
+ result =a2.assignGrader(1337,"t1");
+ //another grader assigned to the group
+ result = a2.assignGrader(2002,"t1");
+
+ //successful update
+ result = a2.assignGrader(2000,"t1");
+ //successful insert
+ result = a2.assignGrader(2001,"t1");
+ ;
+ } catch (SQLException e) {
+            e.printStackTrace();
+ }
     }
 }
