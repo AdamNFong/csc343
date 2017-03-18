@@ -135,8 +135,13 @@ public class Assignment2 {
         
         prep = connection.prepareStatement(modify);
         prep.execute();
-        
+        try{
+        rs.close();
         return true;
+        }(SQLException e){
+        	e.printStackTrace();
+         return false;
+        }
         }catch(SQLException e){
         	e.printStackTrace();
          return false;
@@ -167,9 +172,34 @@ public class Assignment2 {
     	ResultSet rs;
     	try{
      boolean check = false;
+     String dropCapacity = "drop view capacity; drop view memcount;";
+     //student doesn't exist check
+     String studentcheck = "Select * from MarkusUser;";
+    	PreparedStatement ps = connection.prepareStatement(studentcheck);
+    	rs = ps.executeQuery();
+    	while (rs.next()){
+       if (rs.getString ("username").equals(newMember))
+    		check = true;
+        }
+         if (!check)
+            return false;
+            
+     check= false;
+     //group does not exist check
+    	String groupcheck = "Select * from AssignmentGroup;";
+    	ps = connection.prepareStatement(groupcheck);
+    	rs = ps.executeQuery();
+    	while (rs.next()){
+       if (rs.getInt ("group_id") == groupID)
+    		check = true;
+        }
+         if (!check)
+            return false;
+            
+     check=false;
     	//assignment does not exist check
     	String assignmentcheck = "Select * from Assignment;";
-    	PreparedStatement ps = connection.prepareStatement(assignmentcheck);
+   	  ps = connection.prepareStatement(assignmentcheck);
     	rs = ps.executeQuery();
     	while (rs.next()){
        if (rs.getInt ("assignment_id") == assignmentID)
@@ -179,49 +209,66 @@ public class Assignment2 {
             return false;
     	
      check = false;
+     
     	//no group declared check
-    	String noGroupDec = "Select * from AssignmentGroup where assignment_id = '"+ assignmentID + "' and group_id = '" + groupID +"';"; 
+    	String noGroupDec = "Select * from AssignmentGroup;"; 
     	ps = connection.prepareStatement(noGroupDec);
     	rs = ps.executeQuery();
-    	if (rs.next())
+    	while (rs.next())
+       if (rs.getInt("group_id") == groupID && rs.getInt("assignment_id") != assignmentID)
     		return false;
     	
         // max capacity groups
     	String at_capacityviews = "create view capacity as select assignment_id,group_max from Assignment;"
     			+ "create view memcount as select assignment_id , Membership.group_id, count (username) as membercount from assignmentGroup, Membership where AssignmentGroup.group_id = Membership.group_id Group by assignment_id , Membership.group_id;";
   			String qat_capacity = "select mc.group_id from memcount mc JOIN capacity c ON mc.assignment_id = c.assignment_id where mc.membercount = c. group_max;";
+        
    	  ps = connection.prepareStatement(at_capacityviews);
-    	rs = ps.execute();
-    	
+   	  ps.execute();
+      ps = connection.prepareStatement(qat_capacity);
+      rs = ps.executeQuery();
+    	 ps = connection.prepareStatement (dropCapacity);
+         ps.execute();
     	while (rs.next()){
     		if (rs.getInt("group_id") == groupID)
     			return false;
     	}
-    	
+
+       
     	//invalid name check
     	if (newMember.length() > 25)
     		return false;
     	
     	//student check
-    	String student = "Select * from MarkusUsers where username = '" + newMember +"';";
+    	String student = "Select * from MarkusUser;";
     	ps = connection.prepareStatement(student);
     	rs = ps.executeQuery();
-    	if (!rs.getString("type").equals("student"))
+      while (rs.next()){
+    	if (!rs.getString("type").equals("student") && rs.getString ("username").equals(newMember))
     		return false;
-    	
+    	}
+     
+     
     	//student already in groupID
-    	String already = "Select username, group_id from Membership, AssignmentGroup where username = '" + newMember +"' and group_id = '"+ groupID +"';";
+    	String already = "Select username, group_id from Membership ;";
     	ps = connection.prepareStatement(already);
     	rs = ps.executeQuery();
-    	if (!rs.next())
-    		return true;
-    	
+    	while (rs.next()){
+       if (rs.getInt("group_id") == groupID && rs.getString("username").equals(newMember))
+    		  return false;
+    	}
     	
     	//all checks passed now to record
-    	String Record ="insert into Memebership values ('"+newMember+"', " + groupID + ")";
+    	String Record ="insert into Membership values ('"+newMember+"', " + groupID + ")";
     	ps = connection.prepareStatement(Record);
     	ps.execute();
-    	return true;
+     
+     try{
+     rs.close();
+     return true;
+     }catch (SQLException e){
+    		e.printStackTrace();
+        	return false;}
     	
     	}catch (SQLException e){
     		e.printStackTrace();
@@ -410,29 +457,27 @@ public class Assignment2 {
             System.out.println(keks);
 
             //=============================assignGrader=============================================
-           boolean result;
-           // member already in group
-           result = a2.recordMember(1000,2000,"s1");
-           System.out.println(result);
-           // group at capacity
-           result = a2.recordMember(1001,2001,"s2");
-           System.out.println(result);
-           // username DNE
-           result = a2.recordMember(1000,2000,"coalesce");
-           System.out.println(result);
-           // username not student
-           result = a2.recordMember(1000,2000,"i1");
-           System.out.println(result);
-           // assignment DNE
-           result = a2.recordMember(9999,2000,"s1");
-           System.out.println(result);
-           //groupID DNE
-           result = a2.recordMember(1000,5432,"s1");
-           System.out.println(result);
+            boolean result;
+//DNE username
+result = a2.assignGrader(2000,"kek");
+System.out.println(result);
+//student username
+result = a2.assignGrader(2000,"s1");
+System.out.println(result);
+//groupID does not exist
+result =a2.assignGrader(1337,"t1");
+System.out.println(result);
+//another grader assigned to the group
+result = a2.assignGrader(2002,"t1");
+System.out.println(result);
 
-           // successful insertion
-           result = a2.recordMember(1000,2000,"s3");
-           System.out.println(result);
+//successful update
+result = a2.assignGrader(2000,"t1");
+System.out.println(result);
+//successful insert
+result = a2.assignGrader(2001,"t1");
+System.out.println(result);
+
 
            a2.disconnectDB();
        } catch (SQLException e) {
